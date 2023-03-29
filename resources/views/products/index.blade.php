@@ -63,7 +63,8 @@
 
                                         @foreach ( get_variant($product->id) as $single_variant)
                                         <dt class="col-sm-3 pb-0">
-                                            {{ $single_variant->relation_to_product_variants_color->variant }}/{{ $single_variant->relation_to_product_variants_size->variant }}@if ($single_variant->product_variant_three == "")
+                                            {{ $single_variant->relation_to_product_variants_color->variant }}/{{ $single_variant->relation_to_product_variants_size->variant }}
+                                            @if ($single_variant->product_variant_three == "")
                                                 /
                                             @else
                                             /{{ $single_variant->relation_to_product_variants_style->variant }}

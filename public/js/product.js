@@ -2,19 +2,20 @@ var currentIndex = 0;
 
 var indexs = [];
 
-$(document).ready(function () {
+$(document).ready(function() {
     addVariantTemplate();
     $("#file-upload").dropzone({
         url: "{{ route('file-upload') }}",
         method: "post",
         addRemoveLinks: true,
-        success: function (file, response) {
+        success: function(file, response) {
             //
         },
-        error: function (file, response) {
+        error: function(file, response) {
             //
         }
     });
+
 });
 
 function addVariant(event) {
@@ -30,7 +31,7 @@ function getCombination(arr, pre) {
         return pre;
     }
 
-    return arr[0].reduce(function (ans, value) {
+    return arr[0].reduce(function(ans, value) {
         return ans.concat(getCombination(arr.slice(1), pre + value + '/'));
     }, []);
 }
@@ -39,7 +40,7 @@ function updateVariantPreview() {
 
     var valueArray = [];
 
-    $(".select2-value").each(function () {
+    $(".select2-value").each(function() {
         valueArray.push($(this).val());
     });
 
@@ -48,7 +49,7 @@ function updateVariantPreview() {
 
     var tableBody = '';
 
-    $(variantPreviewArray).each(function (index, element) {
+    $(variantPreviewArray).each(function(index, element) {
         tableBody += `<tr>
                         <th>
                                         <input type="hidden" name="product_preview[${index}][variant]" value="${element}">
@@ -97,7 +98,7 @@ function addVariantTemplate() {
                                 </div>
                             </div>`);
 
-    $(`#select2-option-${currentIndex}`).select2({placeholder: "Select Option", theme: "bootstrap4"});
+    $(`#select2-option-${currentIndex}`).select2({ placeholder: "Select Option", theme: "bootstrap4" });
 
     $(`#select2-value-${currentIndex}`)
         .select2({
@@ -108,7 +109,7 @@ function addVariantTemplate() {
             theme: "bootstrap4"
 
         })
-        .on('change', function () {
+        .on('change', function() {
             updateVariantPreview();
         });
 
@@ -143,4 +144,3 @@ function removeVariant(event, element) {
 
     updateVariantPreview();
 }
-

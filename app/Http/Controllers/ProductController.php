@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\ProductVariantPrice;
 use App\Models\Variant;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -61,7 +62,49 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        $product_id = Product::insertGetId([
+            'title' => $request->product_name,
+            'sku' => $request->product_sku,
+            'description' => $request->product_description,
+            'created_at' => Carbon::now()
+        ]);
 
+        foreach ($request->product_variant as $key => $variant) {
+            foreach ($request->product_variant[$key]['value'] as $subkey => $variants) {
+                $provar = $request->product_variant[$key]['option'];
+
+                ProductVariant::create([
+                    'variant' => $variants,
+                    'variant_id' => $provar,
+                    'product_id' => $product_id,
+                ]);
+            }
+        }
+
+        $color_variants = ProductVariant::where('product_id', $product_id)->where('variant_id', '1')->get('id');
+        foreach ($color_variants as $key => $color_variant) {
+            ProductVariantPrice::insert([
+                'product_variant_one' => $color_variant,
+                'price' => $request->price,
+                'stock' => $request->stock,
+                'product_id' => $product_id,
+            ]);
+        }
+
+        $size_variants = ProductVariant::where('product_id', $product_id)->where('variant_id', '2')->get('id');
+            foreach ($size_variants as $key => $size_variant) {
+                ProductVariantPrice::insert([
+                    'product_variant_two' => $size_variant,
+                ]);
+            }
+
+        $style_variants = ProductVariant::where('product_id', $product_id)->where('variant_id', '6')->get('id');
+            foreach ($style_variants as $key => $style_variant) {
+                ProductVariantPrice::insert([
+                    'product_variant_three ' => $style_variant,
+                ]);
+            }
+        return back()->with('success', 'Product Created Successfully!!');
     }
 
 
