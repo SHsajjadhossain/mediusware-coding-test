@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductVariant;
+use App\Models\ProductVariantPrice;
 use App\Models\Variant;
 use Illuminate\Http\Request;
 
@@ -15,7 +17,29 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return view('products.index');
+        return view('products.index', [
+            'all_products' => Product::paginate('5'),
+            'get_colour_variant' => ProductVariant::where('variant_id', '1')->get('variant')
+        ]);
+    }
+
+    public function filter(Request $request)
+    {
+        if ($request->title) {
+            $result = Product::where('title','LIKE','%'.$request->title.'%')->paginate('5');
+        }
+
+        if ($request->price_from && $request->price_to) {
+            $result = ProductVariantPrice::whereBetween('price', ['$request->price_from', '$request->price_to'])->paginate('5');
+        }
+
+        if ($request->date) {
+            $result = Product::where('created_at','LIKE','%'.$request->date.'%')->paginate('5');
+        }
+
+        return view('products.index', [
+            'all_products' => $result,
+        ]);
     }
 
     /**
