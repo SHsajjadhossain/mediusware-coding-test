@@ -16,19 +16,7 @@
                 </div>
                 <div class="col-md-2">
                     <select name="variant" id="" class="form-control">
-                        <option value="">--Select A Variant--</option>
-                        <option style="color: #495057; " value="" disabled='true' disabled><span >Color</span> </option>
-                        @foreach (get_price_colour_variant() as $single_colour_variant)
-                        <option value="{{ $single_colour_variant->product_id }}">{{ $single_colour_variant->variant }}</option>
-                        @endforeach
-                        <option style="color: #495057; " value="" disabled='true' disabled>Size</option>
-                        @foreach (get_price_size_variant() as $single_size_variant)
-                        <option value="" >{{ $single_size_variant->variant }}</option>
-                        @endforeach
-                        <option style="color: #495057; " value="" disabled='true' disabled>Style</option>
-                        @foreach (get_price_style_variant() as $single_style_variant)
-                        <option value="" >{{ $single_style_variant->variant }}</option>
-                        @endforeach
+
                     </select>
                 </div>
 
@@ -65,15 +53,15 @@
 
                     <tbody>
 
-                    @forelse ($all_products as $key => $product)
+                    @forelse ($all_price_filter as $key => $price_filter)
                             <tr>
-                                <td>{{ $all_products->firstItem() + $key }}</td>
-                                <td>{{ $product->title }} <br> {{ $product->created_at }}</td>
-                                <td style="width: 40%;">{{ $product->description }}</td>
+                                <td>{{ $loop->index +1 }}</td>
+                                <td>{{ $price_filter->relation_to_product->title }} <br> {{ $price_filter->relation_to_product->created_at }}</td>
+                                <td style="width: 40%;">{{ $price_filter->relation_to_product->description }}</td>
+                                {{-- <td>{{ $price_filter }}</td> --}}
                                 <td>
-                                    <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant{{ $product->id }}">
-
-                                        @foreach ( get_variant($product->id) as $single_variant)
+                                    <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant{{ $price_filter->product_id }}">
+                                        @foreach ( get_price_variant($price_filter->product_id) as $single_variant)
                                         <dt class="col-sm-3 pb-0">
                                             {{ $single_variant->relation_to_product_variants_color->variant }}/{{ $single_variant->relation_to_product_variants_size->variant }}
                                             @if ($single_variant->product_variant_three == "")
@@ -91,7 +79,8 @@
                                         @endforeach
 
                                     </dl>
-                                    <button onclick="$('#variant{{ $product->id }}').toggleClass('h-auto')" class="btn btn-sm btn-link">Show more</button>
+                                    {{-- {{ $product->id }} --}}
+                                    <button onclick="$('#variant{{ $price_filter->product_id }}').toggleClass('h-auto')" class="btn btn-sm btn-link">Show more</button>
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
@@ -140,7 +129,7 @@
         </div>
 
         <div class="card-footer">
-            {{ $all_products->links('products.products-paginetor') }}
+            {{-- {{ $all_price_filter->links('products.products-paginetor') }} --}}
             {{-- <div class="row justify-content-between">
                 <div class="col-md-6">
                     <p>Showing {{ $paginator->firstItem() }} to {{ $paginator->lastItem() }} out of {{ $paginator->total() }}</p>

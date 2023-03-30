@@ -18,9 +18,10 @@ class ProductController extends Controller
      */
     public function index()
     {
+        // $get_colour_variant = ProductVariant::where('variant_id', '1')->get(['variant', 'product_id']);
+        // return $get_colour_variant;
         return view('products.index', [
             'all_products' => Product::paginate('5'),
-            'get_colour_variant' => ProductVariant::where('variant_id', '1')->get('variant')
         ]);
     }
 
@@ -31,11 +32,15 @@ class ProductController extends Controller
         }
 
         if ($request->price_from && $request->price_to) {
-            $result = ProductVariantPrice::whereBetween('price', ['$request->price_from', '$request->price_to'])->paginate('5');
+            $result = ProductVariantPrice::whereBetween('price', [$request->price_from, $request->price_to])->paginate('5');
         }
 
         if ($request->date) {
             $result = Product::where('created_at','LIKE','%'.$request->date.'%')->paginate('5');
+        }
+
+        if ($request->variant) {
+            $result = Product::where('id','LIKE','%'.$request->variant.'%')->paginate('5');
         }
 
         return view('products.index', [
@@ -77,33 +82,17 @@ class ProductController extends Controller
                     'variant' => $variants,
                     'variant_id' => $provar,
                     'product_id' => $product_id,
+                    'created_at' => Carbon::now()
                 ]);
             }
         }
 
-        $color_variants = ProductVariant::where('product_id', $product_id)->where('variant_id', '1')->get('id');
-        foreach ($color_variants as $key => $color_variant) {
-            ProductVariantPrice::insert([
-                'product_variant_one' => $color_variant,
-                'price' => $request->price,
-                'stock' => $request->stock,
-                'product_id' => $product_id,
-            ]);
-        }
+        $color_variants['product_variant_one'] = ProductVariant::where('product_id', 1)->where('variant_id', '1')->get('id');
+        $size_variants['product_variant_two'] = ProductVariant::where('product_id', 2)->where('variant_id', '2')->get('id');
+        $style_variants['product_variant_three'] = ProductVariant::where('product_id', 6)->where('variant_id', '6')->get('id');
 
-        $size_variants = ProductVariant::where('product_id', $product_id)->where('variant_id', '2')->get('id');
-            foreach ($size_variants as $key => $size_variant) {
-                ProductVariantPrice::insert([
-                    'product_variant_two' => $size_variant,
-                ]);
-            }
+        ProductVariantPrice::create($color_variants,$size_variants,$style_variants,['price' => $request->price,'stock' => $request->stock,'product_id' => $product_id, 'created_at' => Carbon::now()]);
 
-        $style_variants = ProductVariant::where('product_id', $product_id)->where('variant_id', '6')->get('id');
-            foreach ($style_variants as $key => $style_variant) {
-                ProductVariantPrice::insert([
-                    'product_variant_three ' => $style_variant,
-                ]);
-            }
         return back()->with('success', 'Product Created Successfully!!');
     }
 
